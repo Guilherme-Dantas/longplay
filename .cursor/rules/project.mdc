@@ -1,0 +1,17 @@
+---
+description: longplay architecture — our harness, env config, what not to use
+alwaysApply: true
+---
+
+# longplay
+
+English in code, docs, and prompts. Domain language: `docs/domain/ubiquitous-language.md`.
+
+Harness lives in `harness/` (Agent Runtime). Apps in `apps/` only supply tools + policy (Session Soundtrack). GitHub holds code; Ollama and keys stay local.
+
+- Do not add LangChain, LangGraph, CrewAI, or LiteLLM.
+- Swap models via env (`MODEL_*`, optional `FALLBACK_*`). Same `chat.completions`. No `if provider ==`.
+- Never commit `.env`, tokens, or model weights.
+- Phone calls `POST /runs`, not Ollama/OpenRouter.
+- Change the loop only in `harness/`. Change catalog/session rules only in `apps/workout_album/`.
+- Fit (album runtime vs session) beats listening taste.

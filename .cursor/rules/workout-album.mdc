@@ -1,0 +1,21 @@
+---
+description: Session Soundtrack — Spotify tools and measured album runtime
+globs: apps/workout_album/**/*.py
+alwaysApply: false
+---
+
+# Session Soundtrack
+
+This app consumes the harness: `build_spotify_tools()` + `build_policy()`. Do not copy the loop here. Language: Session, album runtime, fit, listening taste, recommendation (`docs/domain/session-soundtrack.md`).
+
+Required tools:
+
+- `search_albums` — catalog, no duration
+- `get_album_tracks` — tracks with `duration_ms`
+- `get_album_duration` — sum via `sum_duration_ms`; never a model guess
+
+Policy: recommend only a **fit** (runtime within tolerance); JSON `AlbumPick`; no markdown. Taste ranks fits; it does not override the clock.
+
+HTTP: `POST /runs` in `api.py`. Lazy loop (import must work without `.env`). Spotify = client credentials. User OAuth stays out until explicitly requested.
+
+Prefer checking fit in code after the model returns, not only in the prompt.

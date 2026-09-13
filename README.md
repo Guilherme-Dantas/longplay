@@ -1,16 +1,17 @@
 # longplay
 
-Um disco no tamanho da sessão. O repo tem um **harness** próprio (OpenAI-compatible) e, em cima dele, um picker de álbum do Spotify pela duração do treino.
+An album sized to the session. This repo is a small OpenAI-compatible **harness** plus a Session Soundtrack picker (Spotify catalog, workout duration).
 
-O harness é código deste projeto e vai para o GitHub. Ollama, chaves e pesos de modelo ficam na sua máquina — runtime, não o repositório.
+The harness is product code and belongs on GitHub. Ollama, API keys, and model weights are local runtime, not the repository.
 
-## Peças
+## Pieces
 
-- `harness/` — `ModelClient`, `ToolRegistry`, `Policy`, `AgentLoop`
-- `examples/hello.py` — tool fake (`get_time`) para provar o loop
-- `apps/workout_album/` — tools Spotify + policy + CLI/`POST /runs`
+- `harness/` — `ModelClient`, `ToolRegistry`, `Policy`, `AgentLoop` (Agent Runtime context)
+- `examples/hello.py` — fake `get_time` tool to prove the loop
+- `apps/workout_album/` — Session Soundtrack: Spotify tools, policy, CLI / `POST /runs`
+- `docs/` — product and domain language (English, DDD where it earns its keep)
 
-O celular não chama o modelo. Chama o backend (`POST /runs`). Duração de álbum vem da soma de `duration_ms` das faixas, nunca da cabeça do LLM.
+The phone never calls the model. It calls the backend (`POST /runs`). Album runtime is the sum of track `duration_ms`, never an LLM guess.
 
 ## Setup
 
@@ -22,20 +23,20 @@ pip install -e ".[dev]"
 copy .env.example .env
 ```
 
-Edite `.env`:
+Edit `.env`:
 
-| Variável | Local (Ollama) | Nuvem (OpenRouter) |
+| Variable | Local (Ollama) | Cloud (OpenRouter) |
 | --- | --- | --- |
 | `MODEL_BASE_URL` | `http://localhost:11434/v1` | `https://openrouter.ai/api/v1` |
-| `MODEL_API_KEY` | `ollama` | sua chave |
-| `MODEL_NAME` | `qwen3:8b` | slug do modelo (`openrouter/free`, `deepseek/deepseek-chat`, etc.) |
+| `MODEL_API_KEY` | `ollama` | your key |
+| `MODEL_NAME` | `qwen3:8b` | model slug (`openrouter/free`, `deepseek/deepseek-chat`, …) |
 
-Fallback: se o local cair, o loop tenta `FALLBACK_*`. Sem `if` de vendor no código — os dois lados falam o mesmo `chat.completions`.
+If local inference is down, the loop tries `FALLBACK_*`. No vendor `if` in code — both sides speak `chat.completions`.
 
-Spotify (client credentials, sem OAuth de usuário):
+Spotify (client credentials, no user OAuth):
 
-1. App em [developer.spotify.com](https://developer.spotify.com/dashboard)
-2. `SPOTIFY_CLIENT_ID` e `SPOTIFY_CLIENT_SECRET` no `.env`
+1. App at [developer.spotify.com](https://developer.spotify.com/dashboard)
+2. `SPOTIFY_CLIENT_ID` and `SPOTIFY_CLIENT_SECRET` in `.env`
 
 ## Hello harness
 
@@ -43,10 +44,10 @@ Spotify (client credentials, sem OAuth de usuário):
 python examples/hello.py
 ```
 
-## Picker de álbum
+## Album picker
 
 ```powershell
-python -m apps.workout_album pick --duration 45 --criteria "eletronico instrumental"
+python -m apps.workout_album pick --duration 45 --criteria "electronic instrumental"
 python -m apps.workout_album serve
 ```
 
@@ -55,18 +56,22 @@ python -m apps.workout_album serve
 ```json
 {
   "duration_minutes": 45,
-  "criteria": "eletronico, sem vocal",
+  "criteria": "electronic, no vocals",
   "tolerance_minutes": 5
 }
 ```
 
-## Ollama (opcional)
+## Ollama (optional)
 
-Na RTX 3060, 8B é o daily driver:
+On an RTX 3060, 8B is the daily driver:
 
 ```powershell
 winget install Ollama.Ollama
 ollama pull qwen3:8b
 ```
 
-Quem clona sem GPU aponta `MODEL_*` para o OpenRouter e roda igual.
+Clones without a GPU point `MODEL_*` at OpenRouter and run the same code.
+
+## Domain docs
+
+See [docs/README.md](docs/README.md).
