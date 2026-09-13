@@ -1,31 +1,35 @@
 from __future__ import annotations
 
+from apps.workout_album.catalog import CatalogSearch
 from apps.workout_album.spotify import SpotifyClient
 from harness.tools import ToolRegistry
 
 
 def build_spotify_tools(client: SpotifyClient | None = None) -> ToolRegistry:
     spotify = client or SpotifyClient()
+    catalog = CatalogSearch(spotify=spotify)
     tools = ToolRegistry()
 
     @tools.tool(
         description=(
-            "Search the Spotify catalog for albums. Returns id, name, artists, "
-            "total_tracks, release_date, and spotify_url. Does not include duration."
+            "Find albums matching listening taste. Discovers candidates in MusicBrainz, "
+            "then resolves each to a Spotify album by title and artist. Returns Spotify "
+            "id, name, artists, total_tracks, release_date, and spotify_url. "
+            "Does not include duration — call get_album_duration next."
         )
     )
     def search_albums(query: str, limit: int = 8) -> dict:
-        return spotify.search_albums(query=query, limit=limit)
+        return catalog.search_albums(query=query, limit=limit)
 
     @tools.tool(
-        description="List tracks for an album id, including each track duration_ms."
+        description="List tracks for a Spotify album id, including each track duration_ms."
     )
     def get_album_tracks(album_id: str) -> dict:
         return spotify.get_album_tracks(album_id=album_id)
 
     @tools.tool(
         description=(
-            "Sum track durations for an album id. Use this before recommending. "
+            "Sum Spotify track durations for an album id. Use this before recommending. "
             "Never guess album length."
         )
     )
