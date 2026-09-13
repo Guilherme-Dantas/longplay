@@ -16,6 +16,6 @@ Required tools:
 
 Policy: recommend only a **fit** (runtime within tolerance); JSON `AlbumPick`; no markdown. Taste ranks fits; it does not override the clock.
 
-HTTP: `POST /runs` in `api.py`. Lazy loop (import must work without `.env`). Spotify = client credentials. User OAuth stays out until explicitly requested.
+HTTP: `POST /runs` in `api.py`. Lazy loop (import must work without `.env`). Spotify auth: read `docs/integrations/spotify.md` before touching the dashboard, Redirect URIs, or `SpotifyClient`. Client credentials only. User OAuth stays out until explicitly requested.
 
 Prefer checking fit in code after the model returns, not only in the prompt.

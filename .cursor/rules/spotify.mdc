@@ -1,0 +1,15 @@
+---
+description: Spotify catalog adapter — client credentials, dashboard, redirect URI
+globs: apps/workout_album/spotify.py
+alwaysApply: false
+---
+
+# Spotify adapter
+
+Read `docs/integrations/spotify.md` before changing auth or telling the user how to create a Dashboard app.
+
+- Flow now: **client credentials** (app token, no user). Catalog only.
+- Token: `POST https://accounts.spotify.com/api/token` with Basic `client_id:client_secret` and `grant_type=client_credentials`. Cache until `expires_in`. No refresh token.
+- Dashboard still needs a Redirect URI. Use `http://127.0.0.1:8000/callback` and click Add. **`localhost` is invalid.** This callback is unused until user OAuth.
+- Secret stays in `.env` on the backend. Never on the phone.
+- Do not add PKCE, scopes, or playback SDKs unless asked.

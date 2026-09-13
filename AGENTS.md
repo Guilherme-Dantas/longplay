@@ -19,7 +19,7 @@ Write and comment in **English**. Domain words: [docs/domain/ubiquitous-language
 - Album runtime is the sum of track `duration_ms`. The model must not invent minutes or album ids.
 - Fit (clock) before taste. See Session Soundtrack invariants.
 - The phone talks to the backend, never to the model endpoint.
-- Spotify is client credentials (catalog) until someone asks for user OAuth.
+- Spotify is client credentials (catalog) until someone asks for user OAuth. Setup, token, and dashboard traps: [docs/integrations/spotify.md](docs/integrations/spotify.md).
 - Python 3.11+, Pydantic v2, pytest in `tests/`. New harness behavior gets a test that does not hit the network.
 
 ## Commands
