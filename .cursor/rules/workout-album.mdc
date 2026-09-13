@@ -6,13 +6,13 @@ alwaysApply: false
 
 # Session Soundtrack
 
-This app consumes the harness: `build_spotify_tools()` + `build_policy()`. Do not copy the loop here. Language: Session, album runtime, fit, listening taste, recommendation (`docs/domain/session-soundtrack.md`).
+This app consumes the harness: `build_spotify_tools()` + `build_policy()`. Do not copy the loop here. Language: Session, album runtime, fit, listening taste, recommendation (`docs/domain/session-soundtrack.md`). Workout is the first activity type, not the product ceiling (`docs/product-later.md`). Do not add activity category trees or Spotify listening history until asked.
 
 Required tools:
 
-- `search_albums` — catalog, no duration
+- `search_albums` — MusicBrainz discovery, then Spotify by album/artist name; no duration
 - `get_album_tracks` — tracks with `duration_ms`
-- `get_album_duration` — sum via `sum_duration_ms`; never a model guess
+- `get_album_duration` — sum via `sum_duration_ms`; never a model guess. Runtime is Spotify, never MusicBrainz.
 
 Policy: recommend only a **fit** (runtime within tolerance); JSON `AlbumPick`; no markdown. Taste ranks fits; it does not override the clock.
 

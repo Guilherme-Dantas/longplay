@@ -1,6 +1,8 @@
 # Session Soundtrack
 
-Core domain: match a workout session to one catalog album.
+Core domain: match a timed session to catalog album(s).
+
+Today the CLI treats the session as a workout. Later the same clock rules apply to other activities. Do not implement that tree here; see [product later](../product-later.md).
 
 ## Aggregate (logical)
 
@@ -38,7 +40,7 @@ Invariant 1 and 2 are domain rules. They should eventually be checked in code af
 ## Application flow
 
 1. Capture session duration, tolerance, and taste.
-2. Search the catalog from the taste (and retries if nothing fits).
+2. Search the catalog from the taste (MusicBrainz tags/titles, then the same record on Spotify by name; retries if nothing fits).
 3. Measure runtime per candidate.
 4. Discard non-fits.
 5. Choose one remaining album by taste.
@@ -48,4 +50,4 @@ Steps 2–5 may be performed by an agent with tools. The rules above do not chan
 
 ## Out of scope (for this context)
 
-Playback, likes, queueing, user library, overlapping sessions, multi-album programs (e.g. warm-up + main set). Those would be new aggregates, not fields on Recommendation.
+Playback, likes, queueing, user library, listening history, activity category trees, overlapping sessions, multi-album programs (e.g. warm-up + main set). Those live in [product later](../product-later.md) — new aggregates or phone UX, not fields on today’s `AlbumPick`.

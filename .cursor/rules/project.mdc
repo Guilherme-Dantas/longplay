@@ -15,3 +15,4 @@ Harness lives in `harness/` (Agent Runtime). Apps in `apps/` only supply tools +
 - Phone calls `POST /runs`, not Ollama/OpenRouter.
 - Change the loop only in `harness/`. Change catalog/session rules only in `apps/workout_album/`.
 - Fit (album runtime vs session) beats listening taste.
+- Phone / later ideas: `docs/product-later.md`. Do not implement activity trees or user listening history until asked.

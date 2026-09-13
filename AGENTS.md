@@ -1,6 +1,6 @@
 # longplay
 
-Monorepo: OpenAI-compatible harness on GitHub + a Session Soundtrack picker (album runtime matches workout duration).
+Monorepo: OpenAI-compatible harness on GitHub + a Session Soundtrack picker (album runtime matches session duration; workout is the first activity type).
 
 Write and comment in **English**. Domain words: [docs/domain/ubiquitous-language.md](docs/domain/ubiquitous-language.md). Contexts: [docs/domain/bounded-contexts.md](docs/domain/bounded-contexts.md).
 
@@ -19,7 +19,7 @@ Write and comment in **English**. Domain words: [docs/domain/ubiquitous-language
 - Album runtime is the sum of track `duration_ms`. The model must not invent minutes or album ids.
 - Fit (clock) before taste. See Session Soundtrack invariants.
 - The phone talks to the backend, never to the model endpoint.
-- Spotify is client credentials (catalog) until someone asks for user OAuth. Setup, token, and dashboard traps: [docs/integrations/spotify.md](docs/integrations/spotify.md).
+- Spotify is client credentials (playback + duration) until someone asks for user OAuth. Setup, token, and dashboard traps: [docs/integrations/spotify.md](docs/integrations/spotify.md). Discovery is MusicBrainz, then resolve by name: [docs/integrations/catalog.md](docs/integrations/catalog.md). Phone ideas (activity categories, listening history) stay in [docs/product-later.md](docs/product-later.md) until explicitly requested.
 - Python 3.11+, Pydantic v2, pytest in `tests/`. New harness behavior gets a test that does not hit the network.
 
 ## Commands

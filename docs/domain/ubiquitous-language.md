@@ -4,7 +4,7 @@ Use these words in code, docs, prompts, and API payloads. Do not invent synonyms
 
 ## Session Soundtrack (core domain)
 
-**Session.** A planned workout window. It has a target duration and a tolerance. It is not a Spotify playback, not a gym booking, not a calendar event.
+**Session.** A planned window of time with a target duration and a tolerance. Today the only type in code is a workout. Later it is any activity (chores, code, study, exercise). It is not a Spotify playback, not a gym booking, not a calendar event.
 
 **Duration.** Elapsed listening time, stored as milliseconds in code and shown as minutes at the edge. Never a track count, never a “feels like 45 minutes.”
 

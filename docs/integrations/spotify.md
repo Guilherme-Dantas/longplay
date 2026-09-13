@@ -88,7 +88,7 @@ GET https://api.spotify.com/v1/...
 
 Catalog tools we expose to the harness:
 
-- `GET /v1/search?type=album` → `search_albums` (no duration)
+- `search_albums` — MusicBrainz discovery, then `GET /v1/search?type=album` by title/artist ([catalog.md](catalog.md)). Fallback: Spotify text search.
 - `GET /v1/albums/{id}/tracks` → `get_album_tracks`
 - `GET /v1/albums/{id}` + track sum → `get_album_duration`
 
@@ -103,4 +103,4 @@ Album runtime is summed in our domain (`sum_duration_ms`). Do not use a model gu
 - **Don’t** copy Spotify playlist/playback types into Session Soundtrack language.
 - **Don’t** tell the user to set Redirect URI to `localhost` or to skip Add on the dashboard.
 
-When user OAuth is actually requested: Authorization Code + PKCE on the phone (secret must not live on the device), new redirect URI still `127.0.0.1` or an `https` app URL, and scopes chosen from the [scopes list](https://developer.spotify.com/documentation/web-api/concepts/scopes). Until then, this file is the whole contract.
+When user OAuth is actually requested (save-to-library, or **listening history** so we stop repeating albums they already know — see [product later](../product-later.md)): Authorization Code + PKCE on the phone (secret must not live on the device), new redirect URI still `127.0.0.1` or an `https` app URL, and scopes chosen from the [scopes list](https://developer.spotify.com/documentation/web-api/concepts/scopes). Until then, this file is the whole contract.

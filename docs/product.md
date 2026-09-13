@@ -1,14 +1,14 @@
 # Product
 
-**longplay** picks one full album whose playing time matches a workout.
+**longplay** picks one full album whose playing time matches a session.
 
-You say how long you will train and what you want to hear. The product returns a single catalog album — not a playlist, not a radio mix — that fits the clock and the taste.
+You say how long the window is and what you want to hear. The product returns a catalog album — not a playlist, not a radio mix — that fits the clock and the taste. The first session type in code is a workout; the phone later is any timed activity (chores, code, study, exercise). See [product later](product-later.md).
 
 The name is the pitch: a long-play record sized to the session.
 
 ## Who it is for
 
-Someone about to train who would rather press play on a record than assemble a playlist. The session is the unit of time. The album is the unit of music.
+Someone about to start a block of time who would rather press play on a record than assemble a playlist. The session is the unit of time. The album is the unit of music. The CLI today is workout-shaped.
 
 ## What a successful pick is
 
@@ -32,4 +32,4 @@ If the clock and the taste fight, the clock wins. An album that overruns the ses
 - CLI: `python -m apps.workout_album pick`
 - HTTP: `POST /runs` with session length, taste, and tolerance
 
-User OAuth and the mobile client are later. Catalog search uses Spotify client credentials.
+User OAuth, activity category selectors, listening history, and the mobile client are later ([product later](product-later.md)). Discovery uses MusicBrainz; Spotify client credentials resolve the album by name and measure runtime.

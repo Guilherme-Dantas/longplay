@@ -1,6 +1,6 @@
 # longplay
 
-An album sized to the session. This repo is a small OpenAI-compatible **harness** plus a Session Soundtrack picker (Spotify catalog, workout duration).
+An album sized to the session. This repo is a small OpenAI-compatible **harness** plus a Session Soundtrack picker (MusicBrainz discovery, Spotify playback, workout duration).
 
 The harness is product code and belongs on GitHub. Ollama, API keys, and model weights are local runtime, not the repository.
 
@@ -8,7 +8,7 @@ The harness is product code and belongs on GitHub. Ollama, API keys, and model w
 
 - `harness/` — `ModelClient`, `ToolRegistry`, `Policy`, `AgentLoop` (Agent Runtime context)
 - `examples/hello.py` — fake `get_time` tool to prove the loop
-- `apps/workout_album/` — Session Soundtrack: Spotify tools, policy, CLI / `POST /runs`
+- `apps/workout_album/` — Session Soundtrack: catalog tools, policy, CLI / `POST /runs`
 - `docs/` — product and domain language (English, DDD where it earns its keep)
 
 The phone never calls the model. It calls the backend (`POST /runs`). Album runtime is the sum of track `duration_ms`, never an LLM guess.
