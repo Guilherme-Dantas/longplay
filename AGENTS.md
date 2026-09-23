@@ -10,6 +10,7 @@ Write and comment in **English**. Domain words: [docs/domain/ubiquitous-language
 - `examples/hello.py` — smoke test with a `get_time` tool.
 - `apps/workout_album/` — Session Soundtrack consumer: catalog tools, policy, CLI, `POST /runs`.
 - `docs/` — product and domain.
+- `design/sleeve.html` — phone screen baseline. Iterate there. Do not treat `apps/mobile` as the design until a port is requested.
 - `.env.example` — config contract. Never commit `.env`.
 
 ## Rules
