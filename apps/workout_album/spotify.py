@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import os
+import threading
 import time
 from typing import Any
 
 import httpx
 
 from apps.workout_album.duration import ms_to_minutes, sum_duration_ms
+from apps.workout_album.timing import log_elapsed
 
 TOKEN_URL = "https://accounts.spotify.com/api/token"
 API_BASE = "https://api.spotify.com/v1"
@@ -30,6 +32,7 @@ class SpotifyClient:
         self.timeout = timeout
         self._token: str | None = None
         self._token_expires_at = 0.0
+        self._token_lock = threading.Lock()
 
     def configured(self) -> bool:
         return bool(self.client_id and self.client_secret)
@@ -75,12 +78,15 @@ class SpotifyClient:
     def _get(self, path: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
         token = self._access_token()
         url = path if path.startswith("http") else f"{API_BASE}{path}"
+        started = time.perf_counter()
         with httpx.Client(timeout=self.timeout) as client:
             response = client.get(
                 url,
                 params=params,
                 headers={"Authorization": f"Bearer {token}"},
             )
+        label = path if path.startswith("http") else path.split("?", 1)[0]
+        log_elapsed(f"spotify GET {label}", started, str(response.status_code))
         if response.status_code >= 400:
             raise SpotifyError(f"Spotify GET {path} failed: {response.status_code} {response.text}")
         return response.json()
@@ -93,12 +99,21 @@ class SpotifyClient:
         now = time.time()
         if self._token and now < self._token_expires_at - 30:
             return self._token
+        with self._token_lock:
+            now = time.time()
+            if self._token and now < self._token_expires_at - 30:
+                return self._token
+            return self._fetch_token(now)
+
+    def _fetch_token(self, now: float) -> str:
+        started = time.perf_counter()
         with httpx.Client(timeout=self.timeout) as client:
             response = client.post(
                 TOKEN_URL,
                 data={"grant_type": "client_credentials"},
                 auth=(self.client_id, self.client_secret),
             )
+        log_elapsed("spotify POST /api/token", started, str(response.status_code))
         if response.status_code >= 400:
             raise SpotifyError(f"Spotify auth failed: {response.status_code} {response.text}")
         payload = response.json()

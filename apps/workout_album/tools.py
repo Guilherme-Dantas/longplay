@@ -13,13 +13,12 @@ def build_spotify_tools(client: SpotifyClient | None = None) -> list[Any]:
     catalog = CatalogSearch(spotify=spotify)
 
     @tool
-    def search_albums(query: str, limit: int = 8) -> dict:
-        """Find albums matching listening taste.
+    def search_albums(query: str, limit: int = 4) -> dict:
+        """Find up to 4 albums for a wide listening brief.
 
-        Discovers candidates in MusicBrainz, then resolves each to a Spotify album
-        by title and artist. Returns Spotify id, name, artists, total_tracks,
-        release_date, and spotify_url. Does not include duration — call
-        get_album_duration next.
+        One MusicBrainz search, then Spotify by title and artist. Each album
+        includes album_id, name, artists, year, duration_minutes, and spotify_url.
+        Duration is already measured. Do not pass an album title or artist as the query.
         """
         return catalog.search_albums(query=query, limit=limit)
 

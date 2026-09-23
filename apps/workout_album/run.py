@@ -11,7 +11,7 @@ class RunRequest(BaseModel):
 
 def user_message(req: RunRequest) -> str:
     return (
-        f"Workout session: {req.duration_minutes} minutes "
+        f"Timed session: {req.duration_minutes} minutes "
         f"(tolerance ±{req.tolerance_minutes} minutes).\n"
         f"Listening criteria: {req.criteria}"
     )
