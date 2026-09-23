@@ -37,6 +37,8 @@ def test_openrouter_model_sets_attribution_headers(monkeypatch: pytest.MonkeyPat
     model = openai_model_from_env("FALLBACK")
     assert model.config["model_id"] == "openrouter/free"
     assert model.client_args["default_headers"]["X-Title"] == "longplay"
+    assert model.config["params"]["max_tokens"] == 2048
+    assert model.config["params"]["extra_body"]["reasoning"] == {"effort": "minimal"}
 
 
 def test_build_model_uses_router_when_fallback_is_set(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -61,6 +63,7 @@ def test_build_model_is_single_endpoint_without_fallback(monkeypatch: pytest.Mon
     monkeypatch.delenv("FALLBACK_MODEL", raising=False)
     model = build_model()
     assert isinstance(model, OpenAIModel)
+    assert model.config.get("params") is None
 
 
 def test_missing_model_env_is_an_error(monkeypatch: pytest.MonkeyPatch) -> None:

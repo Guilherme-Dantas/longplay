@@ -12,6 +12,7 @@ from strands.models.openai import OpenAIModel
 from strands.models.routing import ModelRouter
 
 from apps.workout_album.policy import SYSTEM_PROMPT, AlbumPick
+from apps.workout_album.timing import LoopTiming, configure_timing_logs
 from apps.workout_album.tools import build_spotify_tools
 
 
@@ -38,6 +39,7 @@ def openai_model_from_env(prefix: str) -> OpenAIModel:
         "base_url": base_url,
         "timeout": timeout,
     }
+    params: dict[str, Any] | None = None
     if "openrouter.ai" in base_url:
         client_args["default_headers"] = {
             "HTTP-Referer": os.environ.get(
@@ -45,7 +47,13 @@ def openai_model_from_env(prefix: str) -> OpenAIModel:
             ),
             "X-Title": os.environ.get("OPENROUTER_TITLE", "longplay"),
         }
-    return OpenAIModel(client_args=client_args, model_id=model_id)
+        # Minimal keeps the think step short. A low max_tokens cap stops OpenRouter
+        # from reserving the model's full output window against the credit balance.
+        params = {
+            "max_tokens": 2048,
+            "extra_body": {"reasoning": {"effort": "minimal"}},
+        }
+    return OpenAIModel(client_args=client_args, model_id=model_id, params=params)
 
 
 def build_model() -> OpenAIModel | ModelRouter:
@@ -67,6 +75,7 @@ def build_agent(
     system_prompt: str | None = None,
     tools: list[Any] | None = None,
 ) -> Agent:
+    configure_timing_logs()
     kwargs: dict[str, Any] = {}
     if not stream:
         kwargs["callback_handler"] = None
@@ -75,6 +84,7 @@ def build_agent(
         tools=tools if tools is not None else build_spotify_tools(),
         system_prompt=SYSTEM_PROMPT if system_prompt is None else system_prompt,
         structured_output_model=AlbumPick if output_schema is None else output_schema,
+        hooks=[LoopTiming()],
         **kwargs,
     )
 
