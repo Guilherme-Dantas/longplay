@@ -51,6 +51,16 @@ python -m apps.workout_album pick --duration 45 --criteria "electronic instrumen
 python -m apps.workout_album serve
 ```
 
+## Phone (Expo)
+
+```powershell
+python -m apps.workout_album serve
+cd apps\mobile
+npm run web
+```
+
+The screen calls `POST /runs` on `http://127.0.0.1:8000`. On a phone via Expo Go, set `EXPO_PUBLIC_API_URL` to this machine's LAN address. The carousel and activity selectors are still later (`docs/product-later.md`).
+
 `POST /runs`:
 
 ```json

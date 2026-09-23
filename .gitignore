@@ -12,3 +12,5 @@ build/
 *.egg-info/
 .coverage
 htmlcov/
+node_modules/
+.expo/
