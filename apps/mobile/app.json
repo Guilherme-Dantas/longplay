@@ -33,7 +33,8 @@
     "plugins": [
       "expo-font",
       "expo-router",
-      "expo-status-bar"
+      "expo-status-bar",
+      "expo-image"
     ]
   }
 }

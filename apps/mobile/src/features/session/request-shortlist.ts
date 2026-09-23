@@ -10,6 +10,7 @@ type AlbumPickJson = {
   reason: string;
   spotify_url: string;
   year?: number;
+  image_url?: string | null;
 };
 
 export class PickError extends Error {}
@@ -55,7 +56,21 @@ function toFit(pick: AlbumPickJson, role: AlbumFit["role"]): AlbumFit {
     spotifyUrl: pick.spotify_url,
     role,
     year: typeof pick.year === "number" ? pick.year : undefined,
+    imageUrl: spotifyCoverUrl(pick.image_url),
   };
+}
+
+function spotifyCoverUrl(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  try {
+    const url = new URL(value);
+    const host = url.hostname.toLowerCase();
+    if (url.protocol !== "https:") return undefined;
+    if (host !== "i.scdn.co" && !host.endsWith(".scdn.co")) return undefined;
+    return url.toString();
+  } catch {
+    return undefined;
+  }
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

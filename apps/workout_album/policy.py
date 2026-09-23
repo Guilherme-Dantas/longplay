@@ -13,6 +13,12 @@ class AlbumPick(BaseModel):
     spotify_url: str
 
 
+class AlbumRecommendation(AlbumPick):
+    """What POST /runs returns. The cover is attached from Spotify, not from the model."""
+
+    image_url: str | None = None
+
+
 SYSTEM_PROMPT = """You pick ONE Spotify album whose measured runtime fits the session.
 
 Open the first search. Turn the request into energy plus two or three neighboring genres, and the era if the user gave one. Do not name an artist. Do not name an album. Do not add a country or a language unless the user named it. "Upbeat 2000s" can span dance, indie, pop, and electronic — put those words in the one query.

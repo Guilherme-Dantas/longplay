@@ -4,6 +4,7 @@ import os
 import threading
 import time
 from typing import Any
+from urllib.parse import urlparse
 
 import httpx
 
@@ -33,6 +34,7 @@ class SpotifyClient:
         self._token: str | None = None
         self._token_expires_at = 0.0
         self._token_lock = threading.Lock()
+        self._covers: dict[str, str] = {}
 
     def configured(self) -> bool:
         return bool(self.client_id and self.client_secret)
@@ -41,17 +43,29 @@ class SpotifyClient:
         limit = max(1, min(int(limit), 20))
         data = self._get("/search", {"q": query, "type": "album", "limit": limit})
         items = data.get("albums", {}).get("items") or []
-        albums = [_compact_album(item) for item in items if item]
+        albums = []
+        for item in items:
+            if not item:
+                continue
+            self._remember_cover(item)
+            albums.append(_compact_album(item))
         return {"query": query, "albums": albums}
 
     def get_album_tracks(self, album_id: str) -> dict[str, Any]:
         tracks: list[dict[str, Any]] = []
-        path = f"/albums/{album_id}/tracks"
-        params: dict[str, Any] = {"limit": 50}
-        while path:
-            payload = self._get(path, params)
-            params = {}
-            for item in payload.get("items") or []:
+        offset = 0
+        limit = 50
+        # Own the page numbers. Following Spotify's `next` URL with params={}
+        # makes httpx drop the query, so the first page repeats forever.
+        for _ in range(20):
+            payload = self._get(
+                f"/albums/{album_id}/tracks",
+                {"limit": limit, "offset": offset},
+            )
+            items = payload.get("items") or []
+            if not items:
+                break
+            for item in items:
                 tracks.append(
                     {
                         "id": item.get("id"),
@@ -60,12 +74,39 @@ class SpotifyClient:
                         "track_number": item.get("track_number"),
                     }
                 )
-            next_url = payload.get("next")
-            path = next_url or ""
+            total = payload.get("total")
+            offset += len(items)
+            if not isinstance(total, int) or offset >= total:
+                break
+        else:
+            raise SpotifyError(f"Spotify track list for {album_id} did not end")
         return {"album_id": album_id, "tracks": tracks, "track_count": len(tracks)}
+
+    def cover_for(self, album_id: str) -> str | None:
+        """Cover seen while searching. One album GET only if that search missed it."""
+        with self._token_lock:
+            cached = self._covers.get(album_id)
+        if cached:
+            return cached
+        try:
+            album = self._get(f"/albums/{album_id}")
+        except SpotifyError:
+            return None
+        self._remember_cover(album)
+        with self._token_lock:
+            return self._covers.get(album_id)
+
+    def _remember_cover(self, item: dict[str, Any]) -> None:
+        album_id = item.get("id")
+        url = cover_url(item)
+        if not album_id or not url:
+            return
+        with self._token_lock:
+            self._covers[str(album_id)] = url
 
     def get_album_duration(self, album_id: str) -> dict[str, Any]:
         album = self._get(f"/albums/{album_id}")
+        self._remember_cover(album)
         tracks_payload = self.get_album_tracks(album_id)
         duration_ms = sum_duration_ms(tracks_payload["tracks"])
         return {
@@ -120,6 +161,28 @@ class SpotifyClient:
         self._token = payload["access_token"]
         self._token_expires_at = now + int(payload.get("expires_in") or 3600)
         return self._token
+
+
+def cover_url(item: dict[str, Any]) -> str | None:
+    """Spotify CDN cover near 640px, the size a 208pt disc needs at 3x."""
+    images = [img for img in (item.get("images") or []) if isinstance(img, dict) and img.get("url")]
+    sized = [img for img in images if isinstance(img.get("width"), int) and img["width"] > 0]
+    ordered = sorted(sized, key=lambda img: abs(int(img["width"]) - 640)) if sized else images
+    for img in ordered:
+        url = _spotify_image_url(str(img.get("url") or ""))
+        if url:
+            return url
+    return None
+
+
+def _spotify_image_url(url: str) -> str | None:
+    parsed = urlparse(url)
+    host = (parsed.hostname or "").lower()
+    if parsed.scheme != "https":
+        return None
+    if host != "i.scdn.co" and not host.endswith(".scdn.co"):
+        return None
+    return url
 
 
 def _compact_album(item: dict[str, Any]) -> dict[str, Any]:

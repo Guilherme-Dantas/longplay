@@ -3,7 +3,7 @@ from __future__ import annotations
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from apps.workout_album.policy import AlbumPick
+from apps.workout_album.policy import AlbumRecommendation
 from apps.workout_album.run import RunRequest, user_message
 from apps.workout_album.runtime import run_album_pick
 
@@ -22,8 +22,8 @@ def create_app() -> FastAPI:
     def health() -> dict[str, str]:
         return {"status": "ok"}
 
-    @app.post("/runs", response_model=AlbumPick)
-    def runs(req: RunRequest) -> AlbumPick:
+    @app.post("/runs", response_model=AlbumRecommendation)
+    def runs(req: RunRequest) -> AlbumRecommendation:
         try:
             return run_album_pick(user_message(req))
         except Exception as exc:  # noqa: BLE001

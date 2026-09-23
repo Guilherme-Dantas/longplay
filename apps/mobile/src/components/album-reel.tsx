@@ -1,5 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Pressable, View } from "react-native";
+import { Image } from "expo-image";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   ReduceMotion,
@@ -116,6 +117,7 @@ function Sleeve({
   focused: boolean;
   onPress: () => void;
 }) {
+  const [coverFailed, setCoverFailed] = useState(false);
   const style = useAnimatedStyle(() => {
     const item = index * STRIDE + offset.get();
     const distance = Math.abs(item - (stage.get() - SLEEVE) / 2);
@@ -125,6 +127,7 @@ function Sleeve({
       transform: [{ scale: 1 - t * 0.16 }],
     };
   });
+  const cover = coverFailed ? undefined : album.imageUrl;
 
   return (
     <Pressable
@@ -149,11 +152,35 @@ function Sleeve({
       >
         <View
           style={{
+            width: SLEEVE,
+            height: SLEEVE,
+            borderRadius: SLEEVE / 2,
+            overflow: "hidden",
+          }}
+        >
+          {cover ? (
+            <Image
+              source={{ uri: cover }}
+              recyclingKey={album.albumId}
+              contentFit="cover"
+              transition={180}
+              accessible={false}
+              onError={() => setCoverFailed(true)}
+              style={{ width: SLEEVE, height: SLEEVE }}
+            />
+          ) : null}
+        </View>
+        <View
+          style={{
+            position: "absolute",
+            top: SLEEVE / 2 - 9,
+            left: SLEEVE / 2 - 9,
             width: 18,
             height: 18,
             borderRadius: 9,
             backgroundColor: "#070709",
             boxShadow: "0 0 0 8px rgba(0,0,0,0.25)",
+            pointerEvents: "none",
           }}
         />
       </Animated.View>

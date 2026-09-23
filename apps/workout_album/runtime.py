@@ -11,7 +11,8 @@ from strands import Agent
 from strands.models.openai import OpenAIModel
 from strands.models.routing import ModelRouter
 
-from apps.workout_album.policy import SYSTEM_PROMPT, AlbumPick
+from apps.workout_album.policy import SYSTEM_PROMPT, AlbumPick, AlbumRecommendation
+from apps.workout_album.spotify import SpotifyClient
 from apps.workout_album.timing import LoopTiming, configure_timing_logs
 from apps.workout_album.tools import build_spotify_tools
 
@@ -89,15 +90,17 @@ def build_agent(
     )
 
 
-def run_album_pick(user_message: str, *, stream: bool = False) -> AlbumPick:
-    agent = build_agent(stream=stream)
+def run_album_pick(user_message: str, *, stream: bool = False) -> AlbumRecommendation:
+    load_dotenv()
+    spotify = SpotifyClient()
+    agent = build_agent(stream=stream, tools=build_spotify_tools(spotify))
     result = agent(user_message)
     if stream:
         print_trace(agent.messages)
     output = result.structured_output
     if not isinstance(output, AlbumPick):
         raise AgentRunError("model did not return AlbumPick")
-    return output
+    return AlbumRecommendation(**output.model_dump(), image_url=spotify.cover_for(output.album_id))
 
 
 def trace_lines(messages: list[dict[str, Any]]) -> list[str]:

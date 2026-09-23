@@ -10,6 +10,8 @@ export type AlbumFit = {
   spotifyUrl: string;
   role: AlbumRole;
   year?: number;
+  /** Spotify cover. Absent when the album has no image; the disc keeps its color. */
+  imageUrl?: string;
 };
 
 /**
