@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import time
 from typing import Any
 
 import httpx
+
+from apps.workout_album.timing import log_elapsed
 
 MB_BASE = "https://musicbrainz.org/ws/2"
 USER_AGENT = "longplay/0.1.0 (https://github.com/Guilherme-Dantas/longplay)"
@@ -44,11 +47,14 @@ class MusicBrainzClient:
 
     def _get(self, path: str, params: dict[str, Any]) -> dict[str, Any]:
         url = f"{MB_BASE}{path}"
+        started = time.perf_counter()
         try:
             with httpx.Client(timeout=self.timeout, headers={"User-Agent": USER_AGENT}) as client:
                 response = client.get(url, params=params)
         except httpx.HTTPError as exc:
+            log_elapsed(f"musicbrainz GET {path}", started, "error")
             raise MusicBrainzError(f"MusicBrainz GET {path} failed: {exc}") from exc
+        log_elapsed(f"musicbrainz GET {path}", started, str(response.status_code))
         if response.status_code >= 400:
             raise MusicBrainzError(
                 f"MusicBrainz GET {path} failed: {response.status_code} {response.text}"
