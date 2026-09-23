@@ -86,7 +86,7 @@ Authorization: Bearer <access_token>
 GET https://api.spotify.com/v1/...
 ```
 
-Catalog tools we expose to the harness:
+Catalog tools we expose to the Strands agent:
 
 - `search_albums` — MusicBrainz discovery, then `GET /v1/search?type=album` by title/artist ([catalog.md](catalog.md)). Fallback: Spotify text search.
 - `GET /v1/albums/{id}/tracks` → `get_album_tracks`

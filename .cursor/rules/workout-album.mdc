@@ -6,7 +6,7 @@ alwaysApply: false
 
 # Session Soundtrack
 
-This app consumes the harness: `build_spotify_tools()` + `build_policy()`. Do not copy the loop here. Language: Session, album runtime, fit, listening taste, recommendation (`docs/domain/session-soundtrack.md`). Workout is the first activity type, not the product ceiling (`docs/product-later.md`). Do not add activity category trees or Spotify listening history until asked.
+This app runs a Strands `Agent` (`runtime.py`) with `@tool` catalog functions. Language: Session, album runtime, fit, listening taste, recommendation (`docs/domain/session-soundtrack.md`). Workout is the first activity type, not the product ceiling (`docs/product-later.md`). Do not add activity category trees or Spotify listening history until asked.
 
 Required tools:
 
@@ -16,6 +16,6 @@ Required tools:
 
 Policy: recommend only a **fit** (runtime within tolerance); JSON `AlbumPick`; no markdown. Taste ranks fits; it does not override the clock.
 
-HTTP: `POST /runs` in `api.py`. Lazy loop (import must work without `.env`). Spotify auth: read `docs/integrations/spotify.md` before touching the dashboard, Redirect URIs, or `SpotifyClient`. Client credentials only. User OAuth stays out until explicitly requested.
+HTTP: `POST /runs` in `api.py`. Importing the app must not call the model. Spotify auth: read `docs/integrations/spotify.md` before touching the dashboard, Redirect URIs, or `SpotifyClient`. Client credentials only. User OAuth stays out until explicitly requested.
 
 Prefer checking fit in code after the model returns, not only in the prompt.

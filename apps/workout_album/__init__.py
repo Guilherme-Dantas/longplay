@@ -1,1 +1,1 @@
-"""Workout-length album picker — first consumer of the harness."""
+"""Workout-length album picker. The agent loop is Strands."""

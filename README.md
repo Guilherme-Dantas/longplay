@@ -1,13 +1,13 @@
 # longplay
 
-An album sized to the session. This repo is a small OpenAI-compatible **harness** plus a Session Soundtrack picker (MusicBrainz discovery, Spotify playback, workout duration).
+An album sized to the session. The agent loop is **Strands**. The Session Soundtrack picker discovers on MusicBrainz and plays on Spotify.
 
-The harness is product code and belongs on GitHub. Ollama, API keys, and model weights are local runtime, not the repository.
+Ollama, API keys, and model weights are local runtime, not the repository.
 
 ## Pieces
 
-- `harness/` — `ModelClient`, `ToolRegistry`, `Policy`, `AgentLoop` (Agent Runtime context)
-- `examples/hello.py` — fake `get_time` tool to prove the loop
+- `apps/workout_album/runtime.py` — Strands `Agent` over an OpenAI-compatible endpoint
+- `examples/hello.py` — `get_time` tool to prove the loop
 - `apps/workout_album/` — Session Soundtrack: catalog tools, policy, CLI / `POST /runs`
 - `docs/` — product and domain language (English, DDD where it earns its keep)
 
@@ -31,14 +31,14 @@ Edit `.env`:
 | `MODEL_API_KEY` | `ollama` | your key |
 | `MODEL_NAME` | `qwen3:8b` | model slug (`openrouter/free`, `deepseek/deepseek-chat`, …) |
 
-If local inference is down, the loop tries `FALLBACK_*`. No vendor `if` in code — both sides speak `chat.completions`.
+If local inference is down, `ModelRouter` tries `FALLBACK_*`. Both sides are an `OpenAIModel` pointed at a base URL.
 
 Spotify (client credentials, no user OAuth):
 
 1. App at [developer.spotify.com](https://developer.spotify.com/dashboard)
 2. `SPOTIFY_CLIENT_ID` and `SPOTIFY_CLIENT_SECRET` in `.env`
 
-## Hello harness
+## Hello agent
 
 ```powershell
 python examples/hello.py

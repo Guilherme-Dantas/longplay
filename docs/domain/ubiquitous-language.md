@@ -24,7 +24,7 @@ Use these words in code, docs, prompts, and API payloads. Do not invent synonyms
 
 ## Agent Runtime (generic)
 
-**Harness.** Our agent loop: model call, tool execution, validation. Not a product feature. Not LangChain.
+**Harness.** The Strands agent loop: model call, tool execution, structured output. Not a product feature. Not LangChain.
 
 **Run.** One request through the harness until a final structured result or a limit. No memory across runs.
 

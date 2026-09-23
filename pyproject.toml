@@ -5,11 +5,11 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "longplay"
 version = "0.1.0"
-description = "Tiny OpenAI-compatible agent harness plus a workout-length album picker."
+description = "Session Soundtrack picker. The agent loop is Strands; album runtime is ours."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "openai>=1.40",
+    "strands-agents[openai]>=1.57",
     "pydantic>=2.7",
     "httpx>=0.27",
     "python-dotenv>=1.0",
@@ -24,7 +24,7 @@ dev = ["pytest>=8"]
 longplay = "apps.workout_album.__main__:main"
 
 [tool.setuptools.packages.find]
-include = ["harness*", "apps*", "examples*"]
+include = ["apps*"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]

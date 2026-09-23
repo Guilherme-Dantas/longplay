@@ -28,7 +28,7 @@ Until we store history, this aggregate lives for a single run and then disappear
 4. **Honest identity.** Album id, name, and URL come from the catalog tools. The model may not mint them.
 5. **Taste is ranking, not a filter with fake precision.** Criteria are hints (genre, vocals, energy). Missing metadata is not a hard reject unless the user made it one.
 
-Invariant 1 and 2 are domain rules. They should eventually be checked in code after the model returns, not only in the prompt. Today duration helpers live in `apps/workout_album/duration.py`; the HTTP/CLI path still trusts the policy. Close that gap when touching the picker, not in the harness.
+Invariant 1 and 2 are domain rules. They should eventually be checked in code after the model returns, not only in the prompt. Today duration helpers live in `apps/workout_album/duration.py`; the HTTP/CLI path still trusts the Strands result. Close that gap when touching the picker.
 
 ## Value objects (names)
 
@@ -46,7 +46,7 @@ Invariant 1 and 2 are domain rules. They should eventually be checked in code af
 5. Choose one remaining album by taste.
 6. Return a recommendation.
 
-Steps 2–5 may be performed by an agent with tools. The rules above do not change if we later replace the agent with a query.
+Steps 2–5 run inside a Strands `Agent` with catalog tools. The rules above do not change if we later replace the agent with a query.
 
 ## Out of scope (for this context)
 

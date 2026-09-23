@@ -5,9 +5,7 @@ import json
 
 from apps.workout_album.api import create_app
 from apps.workout_album.run import RunRequest, user_message
-from apps.workout_album.policy import build_policy
-from apps.workout_album.tools import build_spotify_tools
-from harness import AgentLoop
+from apps.workout_album.runtime import run_album_pick
 
 
 def main() -> None:
@@ -39,9 +37,7 @@ def main() -> None:
         criteria=args.criteria,
         tolerance_minutes=args.tolerance,
     )
-    result = AgentLoop.from_env(tools=build_spotify_tools(), policy=build_policy()).run(
-        user_message(req)
-    )
+    result = run_album_pick(user_message(req), stream=True)
     print(json.dumps(result.model_dump(), indent=2, ensure_ascii=False))
 
 

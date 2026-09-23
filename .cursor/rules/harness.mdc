@@ -1,25 +1,14 @@
 ---
-description: Harness core conventions (client, tools, policy, loop)
-globs: harness/**/*.py
+description: Strands agent loop — model endpoint, tools, structured output
+globs: apps/workout_album/runtime.py,apps/workout_album/tools.py,examples/hello.py
 alwaysApply: false
 ---
 
-# Agent Runtime
+# Agent loop
 
-Four pieces, one job each. This context does not know albums or workouts.
+The loop is Strands (`Agent`, `@tool`, `OpenAIModel`). Do not add LangChain, LangGraph, CrewAI, or LiteLLM.
 
-- `ModelClient` — one OpenAI-compatible endpoint. Fallback only on network/timeout.
-- `ToolRegistry` — name, schema, handler. Tool failures become JSON for the model, not an exception in the loop.
-- `Policy` — system prompt, `max_steps`, Pydantic output schema.
-- `AgentLoop` — messages → model → tool_calls → repeat → validate JSON. One request = one run. No memory, queue, or multi-agent.
-
-```python
-# bad
-from langchain.agents import create_agent
-
-# good
-loop = AgentLoop.from_env(tools=registry, policy=policy)
-result = loop.run(user_message)
-```
-
-Generic tools belong on the registry, not the client. Parse model JSON with `harness.jsonutil.parse_json_object`.
+- One `OpenAIModel` per endpoint. Ollama and OpenRouter differ by `MODEL_*` / `FALLBACK_*` URL, key, and model name. `ModelRouter` fails over only when fallback env is set.
+- Tools are `@tool` functions in the app. Catalog and duration stay in `apps/workout_album/`.
+- Final output is a Pydantic model (`structured_output_model`). One request builds a new `Agent` (no memory across runs).
+- CLI may stream and print `trace_lines`. `POST /runs` stays silent and returns `AlbumPick`.

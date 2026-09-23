@@ -6,10 +6,10 @@ Two contexts. Keep their models and language from leaking.
 ┌─────────────────────┐     ┌──────────────────────────┐
 │   Agent Runtime     │     │   Session Soundtrack     │
 │                     │     │                          │
-│  Run, Tool, Policy  │────▶│  Session, Taste, Album   │
+│  Strands Agent      │────▶│  Session, Taste, Album   │
 │  Model endpoint     │     │  Runtime, Recommendation │
 └─────────────────────┘     └────────────┬─────────────┘
-         harness/                        │
+   runtime.py (Strands)                  │
                                          ▼
                          ┌──────────────────────────┐
                          │ Catalog (anti-corruption)│
@@ -21,13 +21,11 @@ Two contexts. Keep their models and language from leaking.
 
 **Purpose.** Talk to a language model, execute tools, stop with valid structured output.
 
-**In code.** `harness/`
+**In code.** `apps/workout_album/runtime.py` builds a Strands `Agent`. The loop itself is the Strands SDK.
 
-**Does not know.** Workouts, albums, Spotify, minutes of training.
+**Does not know.** Workouts, albums, Spotify, minutes of training. Those stay in the tool functions and `AlbumPick`.
 
-**Published language.** `Policy`, `ToolRegistry`, `AgentLoop.run(user_message) → schema`.
-
-Treat this as a generic supporting domain. Other apps should be able to register different tools without renaming types after music.
+**Published language.** `Agent` + `@tool` + `structured_output_model`. One call returns `AlbumPick`.
 
 ## Session Soundtrack
 
@@ -39,7 +37,7 @@ Treat this as a generic supporting domain. Other apps should be able to register
 
 **Published language.** Session duration, tolerance, taste, recommendation (`AlbumPick` at the HTTP edge).
 
-This is the core domain. If a rule is about clocks, records, or taste, it lives here — in policy, duration math, and tool contracts — not in `harness/loop.py`.
+This is the core domain. If a rule is about clocks, records, or taste, it lives here — in the system prompt, duration math, and tool contracts — not inside the Strands SDK.
 
 ## Catalog (external)
 
@@ -60,4 +58,4 @@ The soundtrack context uses the runtime context as a platform:
 2. It supplies a policy (fit first, then taste, JSON recommendation).
 3. It maps a session + taste into the user message of a run.
 
-The runtime context must not grow soundtrack types. The soundtrack context must not grow model-vendor types.
+Strands stays in `runtime.py`. Album, fit, and duration rules stay in the rest of this app.
